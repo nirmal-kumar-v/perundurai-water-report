@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration - Perundurai Water Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003A7A;
+            --secondary: #FF8C00;
+            --danger: #DC3545;
+            --success: #28A745;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, #005ba8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .navbar {
+            background-color: var(--primary);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        body { padding-top: 70px; }
+
+        .register-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .register-container h2 {
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .register-container p {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(0, 58, 122, 0.25);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-control.is-invalid {
+            border-color: var(--danger);
+        }
+
+        .photo-preview {
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .photo-preview img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            border: 2px solid var(--primary);
+        }
+
+        .btn-register {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            border-radius: 8px;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-register:hover {
+            background-color: #002d5f;
+            color: white;
+        }
+
+        .btn-register:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-water"></i> Water Portal
+            </a>
+            <a href="user-login.html" class="nav-link ms-auto">Already registered? Login</a>
+        </div>
+    </nav>
+
+    <div class="register-container">
+        <h2><i class="fas fa-user-plus"></i> Register</h2>
+        <p>Create your account to report water problems</p>
+
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i> Registration successful! Redirecting to login...
+        </div>
+
+        <form id="registerForm">
+            <!-- Aadhaar -->
+            <div class="form-group">
+                <label for="aadhaar">Aadhaar Number (12 digits)</label>
+                <input type="text" class="form-control" id="aadhaar" placeholder="123456789012" maxlength="12">
+                <div class="error-message" id="aadhaarError"></div>
+            </div>
+
+            <!-- Full Name -->
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" class="form-control" id="fullName" placeholder="Your full name">
+                <div class="error-message" id="nameError"></div>
+            </div>
+
+            <!-- Phone -->
+            <div class="form-group">
+                <label for="phone">Phone Number (10 digits)</label>
+                <input type="text" class="form-control" id="phone" placeholder="9876543210" maxlength="10">
+                <div class="error-message" id="phoneError"></div>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" placeholder="user@example.com">
+                <div class="error-message" id="emailError"></div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group">
+                <label for="address">Address/Street</label>
+                <input type="text" class="form-control" id="address" placeholder="Your address">
+                <div class="error-message" id="addressError"></div>
+            </div>
+
+            <!-- Ward Selection -->
+            <div class="form-group">
+                <label for="ward">Ward/Location</label>
+                <select class="form-control" id="ward">
+                    <option value="">Select Ward</option>
+                    <option value="Ward 1 - SIPCOT Industrial Area">Ward 1 - SIPCOT Industrial Area</option>
+                    <option value="Ward 2 - Perundurai Town Center">Ward 2 - Perundurai Town Center</option>
+                    <option value="Ward 3 - Elithingal Patti">Ward 3 - Elithingal Patti</option>
+                    <option value="Ward 4 - Kuttam Palayam">Ward 4 - Kuttam Palayam</option>
+                    <option value="Ward 5 - Kasilingam Palayam">Ward 5 - Kasilingam Palayam</option>
+                    <option value="Ward 6 - Kadappamadi">Ward 6 - Kadappamadi</option>
+                    <option value="Ward 7 - Velliyam Palayam">Ward 7 - Velliyam Palayam</option>
+                    <option value="Ward 8 - Ingur">Ward 8 - Ingur</option>
+                    <option value="Ward 9 - Kambaliyam Patti">Ward 9 - Kambaliyam Patti</option>
+                    <option value="Ward 10 - Periyavettu Palayam">Ward 10 - Periyavettu Palayam</option>
+                    <option value="Ward 11 - Sarali">Ward 11 - Sarali</option>
+                    <option value="Ward 12 - Palap Palayam">Ward 12 - Palap Palayam</option>
+                    <option value="Ward 13 - Varap Palayam">Ward 13 - Varap Palayam</option>
+                    <option value="Ward 14 - Karuppa Goundar Pudur">Ward 14 - Karuppa Goundar Pudur</option>
+                    <option value="Ward 15 - Residential Sectors">Ward 15 - Residential Sectors</option>
+                </select>
+                <div class="error-message" id="wardError"></div>
+            </div>
+
+            <!-- Photo Upload (KYC) -->
+            <div class="form-group">
+                <label for="photo">Photo (KYC Profile Picture)</label>
+                <input type="file" class="form-control" id="photo" accept="image/jpeg,image/png">
+                <small style="color: #666;">JPG/PNG only, max 5MB</small>
+                <div class="photo-preview" id="photoPreview"></div>
+                <div class="error-message" id="photoError"></div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password (min 6 characters)</label>
+                <input type="password" class="form-control" id="password" placeholder="••••••••">
+                <div class="error-message" id="passwordError"></div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" placeholder="••••••••">
+                <div class="error-message" id="confirmError"></div>
+            </div>
+
+            <!-- Terms -->
+            <div class="form-group">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="terms">
+                    <label class="form-check-label" for="terms">
+                        I agree to the Terms & Conditions
+                    </label>
+                </div>
+                <div class="error-message" id="termsError"></div>
+            </div>
+
+            <button type="submit" class="btn-register">Register Now</button>
+        </form>
+
+        <div class="login-link">
+            Already have an account? <a href="user-login.html">Login here</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Clear all error messages
+        function clearErrors() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.classList.remove('show');
+                el.textContent = '';
+            });
+            document.querySelectorAll('.form-control').forEach(el => {
+                el.classList.remove('is-invalid');
+            });
+        }
+
+        // Photo preview
+        document.getElementById('photo').addEventListener('change', function(e) {
+            clearErrors();
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showError('photoError', 'File size exceeds 5MB');
+                    return;
+                }
+                if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                    showError('photoError', 'Only JPG/PNG files allowed');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('photoPreview').innerHTML = `<img src="${event.target.result}" alt="Photo preview">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Show error message
+        function showError(fieldId, message) {
+            const errorEl = document.getElementById(fieldId);
+            errorEl.textContent = message;
+            errorEl.classList.add('show');
+            const inputId = fieldId.replace('Error', '');
+            document.getElementById(inputId).classList.add('is-invalid');
+        }
+
+        // Validate form
+        function validateForm() {
+            clearErrors();
+            let isValid = true;
+
+            const aadhaar = document.getElementById('aadhaar').value.trim();
+            if (!aadhaar || !/^\d{12}$/.test(aadhaar)) {
+                showError('aadhaarError', 'Aadhaar must be 12 digits');
+                isValid = false;
+            }
+
+            const fullName = document.getElementById('fullName').value.trim();
+            if (!fullName) {
+                showError('nameError', 'Full name is required');
+                isValid = false;
+            }
+
+            const phone = document.getElementById('phone').value.trim();
+            if (!phone || !/^\d{10}$/.test(phone)) {
+                showError('phoneError', 'Phone must be 10 digits');
+                isValid = false;
+            }
+
+            const email = document.getElementById('email').value.trim();
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('emailError', 'Valid email is required');
+                isValid = false;
+            }
+
+            const address = document.getElementById('address').value.trim();
+            if (!address) {
+                showError('addressError', 'Address is required');
+                isValid = false;
+            }
+
+            const ward = document.getElementById('ward').value;
+            if (!ward) {
+                showError('wardError', 'Select a ward');
+                isValid = false;
+            }
+
+            const photo = document.getElementById('photo').files[0];
+            if (!photo) {
+                showError('photoError', 'Photo is required');
+                isValid = false;
+            }
+
+            const password = document.getElementById('password').value;
+            if (!password || password.length < 6) {
+                showError('passwordError', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (password !== confirmPassword) {
+                showError('confirmError', 'Passwords do not match');
+                isValid = false;
+            }
+
+            if (!document.getElementById('terms').checked) {
+                showError('termsError', 'You must agree to terms');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Register user
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            if (!validateForm()) return;
+
+            // Convert photo to base64
+            const photoFile = document.getElementById('photo').files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const photoBase64 = event.target.result;
+
+                // Get existing users
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+
+                // Check if Aadhaar already exists
+                if (users.some(u => u.aadhaar === document.getElementById('aadhaar').value)) {
+                    alert('This Aadhaar is already registered!');
+                    return;
+                }
+
+                // Create new user object
+                const newUser = {
+                    id: 'USER-' + Date.now(),
+                    aadhaar: document.getElementById('aadhaar').value,
+                    name: document.getElementById('fullName').value,
+                    phone: document.getElementById('phone').value,
+                    email: document.getElementById('email').value,
+                    address: document.getElementById('address').value,
+                    ward: document.getElementById('ward').value,
+                    photo: photoBase64,
+                    password: document.getElementById('password').value,
+                    registeredDate: new Date().toISOString(),
+                    verified: true
+                };
+
+                // Save user
+                users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(users));
+
+                // Show success message
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('registerForm').style.display = 'none';
+
+                // Redirect after 2 seconds
+                setTimeout(() => {
+                    window.location.href = 'user-login.html';
+                }, 2000);
+            };
+
+            reader.readAsDataURL(photoFile);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supreme Dashboard - Perundurai Water Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #003A7A; --secondary: #FF8C00; --danger: #DC3545; }
+        body { font-family: 'Segoe UI', Roboto, Arial; background-color: #f8f9fa; }
+        .navbar { background-color: var(--danger); }
+        .navbar-brand { color: white !important; font-weight: 700; font-size: 1.5rem; }
+        .navbar .nav-link { color: rgba(255,255,255,0.8) !important; }
+        footer { background-color: var(--danger); color: white; padding: 40px 0; margin-top: 60px; }
+        .exec-card { background: linear-gradient(135deg, var(--danger) 0%, #bd2130 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .exec-card h5 { font-size: 2.5rem; font-weight: 700; margin: 0; }
+        .exec-card p { margin: 5px 0 0 0; opacity: 0.9; }
+        .chart-container { position: relative; height: 300px; margin-bottom: 30px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .table-wrapper { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        table tbody tr:hover { background-color: #f8f9fa; }
+        .performance-good { color: #28A745; font-weight: 700; }
+        .performance-warning { color: #FFC107; font-weight: 700; }
+        .performance-bad { color: #DC3545; font-weight: 700; }
+        .escalation-alert { background: #f8d7da; border-left: 4px solid var(--danger); padding: 15px; margin-bottom: 10px; border-radius: 8px; }
+        .tab-content { padding: 20px; }
+        .nav-tabs { border-bottom: 2px solid #ddd; }
+        .nav-tabs .nav-link { color: #333; border: none; border-bottom: 3px solid transparent; font-weight: 600; }
+        .nav-tabs .nav-link:hover { border-bottom-color: var(--danger); }
+        .nav-tabs .nav-link.active { color: var(--danger); background-color: transparent; border-bottom-color: var(--danger); }
+        .btn-primary { background-color: var(--danger); border-color: var(--danger); }
+        .btn-primary:hover { background-color: #bd2130; border-color: #bd2130; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html"><i class="fas fa-crown"></i> Supreme Authority Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><span style="color: white; margin: 0 20px;" id="supremeName">Supreme Authority</span></li>
+                    <li class="nav-item"><a class="nav-link" onclick="logout()" style="cursor: pointer;">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 30px; margin-bottom: 60px;">
+        <h1 style="color: var(--danger); font-weight: 700; margin-bottom: 30px;">Supreme Authority Analytics Dashboard</h1>
+
+        <!-- Executive Summary -->
+        <div class="row">
+            <div class="col-md-2">
+                <div class="exec-card">
+                    <h5 id="totalProblems">0</h5>
+                    <p>Total Problems</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="exec-card">
+                    <h5 id="activeProblems">0</h5>
+                    <p>Active Now</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="exec-card">
+                    <h5 id="completedProblems">0</h5>
+                    <p>Completed</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="exec-card">
+                    <h5 id="resolutionRate">0%</h5>
+                    <p>Resolution Rate</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="exec-card">
+                    <h5 id="avgTime">0</h5>
+                    <p>Avg Days</p>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="exec-card">
+                    <h5 id="escalatedCount">0</h5>
+                    <p style="color: #FFD700;">Escalated</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4">
+            <li class="nav-item">
+                <a class="nav-link active" data-bs-toggle="tab" href="#analytics" style="cursor: pointer;">Analytics</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#performance" style="cursor: pointer;">Admin Performance</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#escalations" style="cursor: pointer;">Escalations</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#reports" style="cursor: pointer;">Reports</a>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Analytics Tab -->
+            <div id="analytics" class="tab-pane fade show active">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5 style="color: var(--primary); font-weight: 700;">30-Day Resolution Trend</h5>
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5 style="color: var(--primary); font-weight: 700;">Problem Categories</h5>
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h5 style="color: var(--primary); font-weight: 700;">Problems by Ward Distribution</h5>
+                    <canvas id="wardChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Admin Performance Tab -->
+            <div id="performance" class="tab-pane fade">
+                <div class="table-wrapper">
+                    <h5 style="color: var(--primary); font-weight: 700; margin-bottom: 20px;">Admin Performance Metrics</h5>
+                    <table class="table table-hover">
+                        <thead style="background-color: var(--danger); color: white;">
+                            <tr>
+                                <th>Admin</th>
+                                <th>Assigned</th>
+                                <th>Completed</th>
+                                <th>Completion %</th>
+                                <th>Avg Resolution Time</th>
+                                <th>On-Time %</th>
+                                <th>Performance Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="performanceTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Escalations Tab -->
+            <div id="escalations" class="tab-pane fade">
+                <div class="table-wrapper">
+                    <h5 style="color: var(--primary); font-weight: 700; margin-bottom: 20px;">⚠️ Escalated Problems (>72 Hours)</h5>
+                    <div id="escalationsList"></div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="reports" class="tab-pane fade">
+                <div class="table-wrapper">
+                    <h5 style="color: var(--primary); font-weight: 700; margin-bottom: 20px;">Generate Reports</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100 mb-2" onclick="exportCSV()">
+                                <i class="fas fa-download"></i> Download CSV
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100 mb-2" onclick="generateReport()">
+                                <i class="fas fa-file-pdf"></i> Monthly Report
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100 mb-2" onclick="emailTWAD()">
+                                <i class="fas fa-envelope"></i> Email to TWAD
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100 mb-2" onclick="printReport()">
+                                <i class="fas fa-print"></i> Print Report
+                            </button>
+                        </div>
+                    </div>
+                    <hr>
+                    <div id="reportContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4"><h5><i class="fas fa-info-circle"></i> Help</h5><p><a href="faq.html" style="color: #b3d9ff; text-decoration: none;">FAQ</a></p></div>
+                <div class="col-md-4"><h5><i class="fas fa-phone"></i> Emergency</h5><p>TWAD: 0424-2260621</p></div>
+                <div class="col-md-4"><h5><i class="fas fa-map"></i> Public Tracker</h5><p><a href="public-tracker.html" style="color: #b3d9ff; text-decoration: none;">View problems</a></p></div>
+            </div>
+            <hr style="background-color: rgba(255,255,255,0.2);">
+            <p style="text-align: center;">&copy; 2025 Perundurai Water Problem Portal</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        let allProblems = [];
+        let charts = {};
+
+        function checkLogin() {
+            let session = JSON.parse(localStorage.getItem('currentSession'));
+            if (!session || session.userType !== 'supreme') {
+                window.location.href = 'supreme-login.html';
+                return;
+            }
+            document.getElementById('supremeName').textContent = 'Supreme Authority';
+            loadDashboard();
+        }
+
+        function loadDashboard() {
+            allProblems = JSON.parse(localStorage.getItem('problems')) || [];
+            updateMetrics();
+            createCharts();
+            loadAdminPerformance();
+            loadEscalations();
+        }
+
+        function updateMetrics() {
+            let completed = allProblems.filter(p => p.status === 'Completed').length;
+            let active = allProblems.filter(p => p.status !== 'Completed').length;
+            let resolutionRate = allProblems.length > 0 ? Math.round((completed / allProblems.length) * 100) : 0;
+            
+            let totalDays = 0, resolvedCount = 0;
+            allProblems.forEach(p => {
+                if (p.status === 'Completed') {
+                    let days = Math.floor((new Date(p.escalatedDate || p.reportedDate) - new Date(p.reportedDate)) / (1000 * 60 * 60 * 24));
+                    totalDays += days;
+                    resolvedCount++;
+                }
+            });
+            let avgDays = resolvedCount > 0 ? Math.round(totalDays / resolvedCount) : 0;
+
+            let escalated = allProblems.filter(p => {
+                if (p.status === 'Completed') return false;
+                let days = Math.floor((new Date() - new Date(p.reportedDate)) / (1000 * 60 * 60 * 24));
+                return days > 3;
+            }).length;
+
+            document.getElementById('totalProblems').textContent = allProblems.length;
+            document.getElementById('activeProblems').textContent = active;
+            document.getElementById('completedProblems').textContent = completed;
+            document.getElementById('resolutionRate').textContent = resolutionRate + '%';
+            document.getElementById('avgTime').textContent = avgDays;
+            document.getElementById('escalatedCount').textContent = escalated;
+        }
+
+        function createCharts() {
+            // Trend chart - last 30 days
+            let trendData = {};
+            for (let i = 30; i >= 0; i--) {
+                let date = new Date();
+                date.setDate(date.getDate() - i);
+                let dateStr = date.toLocaleDateString();
+                trendData[dateStr] = { reported: 0, completed: 0 };
+            }
+
+            allProblems.forEach(p => {
+                let dateStr = new Date(p.reportedDate).toLocaleDateString();
+                if (trendData[dateStr]) trendData[dateStr].reported++;
+                if (p.status === 'Completed') {
+                    let completedStr = new Date(p.escalatedDate || p.reportedDate).toLocaleDateString();
+                    if (trendData[completedStr]) trendData[completedStr].completed++;
+                }
+            });
+
+            let trendCtx = document.getElementById('trendChart').getContext('2d');
+            if (charts.trend) charts.trend.destroy();
+            charts.trend = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(trendData),
+                    datasets: [
+                        {
+                            label: 'Reported',
+                            data: Object.values(trendData).map(d => d.reported),
+                            borderColor: '#DC3545',
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Completed',
+                            data: Object.values(trendData).map(d => d.completed),
+                            borderColor: '#28A745',
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Category chart
+            let categories = {};
+            allProblems.forEach(p => {
+                categories[p.category] = (categories[p.category] || 0) + 1;
+            });
+
+            let catCtx = document.getElementById('categoryChart').getContext('2d');
+            if (charts.category) charts.category.destroy();
+            charts.category = new Chart(catCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categories),
+                    datasets: [{
+                        data: Object.values(categories),
+                        backgroundColor: ['#003A7A', '#FF8C00', '#DC3545', '#28A745', '#0dcaf0', '#FFC107', '#6f42c1', '#20c997', '#fd7e14', '#6610f2', '#e83e8c', '#17a2b8']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Ward chart
+            let wards = {};
+            allProblems.forEach(p => {
+                let ward = p.ward.split('-')[0].trim();
+                wards[ward] = (wards[ward] || 0) + 1;
+            });
+
+            let wardCtx = document.getElementById('wardChart').getContext('2d');
+            if (charts.ward) charts.ward.destroy();
+            charts.ward = new Chart(wardCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(wards).sort(),
+                    datasets: [{
+                        label: 'Problems',
+                        data: Object.values(wards),
+                        backgroundColor: '#003A7A',
+                        borderRadius: 5
+                    }]
+                },
+                options: { 
+                    indexAxis: 'y',
+                    responsive: true, 
+                    maintainAspectRatio: false 
+                }
+            });
+        }
+
+        function loadAdminPerformance() {
+            let admins = {
+                'admin': { assigned: 0, completed: 0, totalDays: 0 }
+            };
+
+            allProblems.forEach(p => {
+                admins['admin'].assigned++;
+                if (p.status === 'Completed') {
+                    admins['admin'].completed++;
+                    let days = Math.floor((new Date(p.escalatedDate || p.reportedDate) - new Date(p.reportedDate)) / (1000 * 60 * 60 * 24));
+                    admins['admin'].totalDays += days;
+                }
+            });
+
+            let html = '';
+            Object.entries(admins).forEach(([name, data]) => {
+                let completionRate = data.assigned > 0 ? Math.round((data.completed / data.assigned) * 100) : 0;
+                let avgDays = data.completed > 0 ? Math.round(data.totalDays / data.completed) : 0;
+                let onTimeRate = data.assigned > 0 ? Math.round(((data.assigned - data.assigned) / data.assigned) * 100) : 100;
+                let score = (completionRate * 0.5) + (onTimeRate * 0.4) + ((100 - avgDays * 10) * 0.1);
+                
+                let perfClass = score >= 80 ? 'performance-good' : score >= 60 ? 'performance-warning' : 'performance-bad';
+
+                html += `
+                    <tr>
+                        <td><strong>${name}</strong></td>
+                        <td>${data.assigned}</td>
+                        <td>${data.completed}</td>
+                        <td>${completionRate}%</td>
+                        <td>${avgDays} days</td>
+                        <td>${onTimeRate}%</td>
+                        <td class="${perfClass}">${Math.round(score)}/100</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('performanceTable').innerHTML = html;
+        }
+
+        function loadEscalations() {
+            let escalated = allProblems.filter(p => {
+                if (p.status === 'Completed') return false;
+                let days = Math.floor((new Date() - new Date(p.reportedDate)) / (1000 * 60 * 60 * 24));
+                return days > 3;
+            });
+
+            let html = '';
+            if (escalated.length === 0) {
+                html = '<p class="text-success" style="font-weight: 700;">✓ No escalations - All problems handled within deadline</p>';
+            } else {
+                escalated.forEach(p => {
+                    let days = Math.floor((new Date() - new Date(p.reportedDate)) / (1000 * 60 * 60 * 24));
+                    html += `
+                        <div class="escalation-alert">
+                            <strong>${p.id}</strong> - ${p.category} in ${p.ward}
+                            <div style="margin-top: 8px;">
+                                <small style="color: #666;"><strong>${days} DAYS OVERDUE</strong></small>
+                                <button class="btn btn-sm btn-danger ms-2" onclick="forceAction('${p.id}')">Force Action</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('escalationsList').innerHTML = html;
+        }
+
+        function exportCSV() {
+            let csv = 'ID,Category,Ward,Status,Days,Endorsements\n';
+            allProblems.forEach(p => {
+                let days = Math.floor((new Date() - new Date(p.reportedDate)) / (1000 * 60 * 60 * 24));
+                csv += `${p.id},"${p.category}","${p.ward}",${p.status},${days},${p.endorsements || 0}\n`;
+            });
+
+            let blob = new Blob([csv], { type: 'text/csv' });
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement('a');
+            a.href = url;
+            a.download = 'water-problems-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+        }
+
+        function generateReport() {
+            let completed = allProblems.filter(p => p.status === 'Completed').length;
+            let resolutionRate = allProblems.length > 0 ? Math.round((completed / allProblems.length) * 100) : 0;
+            
+            let report = `
+                <div style="background: white; padding: 20px; border-radius: 8px;">
+                    <h4>Monthly Water Problem Report - ${new Date().toLocaleDateString('en-US', {month: 'long', year: 'numeric'})}</h4>
+                    <hr>
+                    <p><strong>Total Problems Reported:</strong> ${allProblems.length}</p>
+                    <p><strong>Problems Resolved:</strong> ${completed}</p>
+                    <p><strong>Resolution Rate:</strong> ${resolutionRate}%</p>
+                    <p><strong>Active Problems:</strong> ${allProblems.filter(p => p.status !== 'Completed').length}</p>
+                    <p><strong>Report Generated:</strong> ${new Date().toLocaleString()}</p>
+                    <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">This report summarizes water problem management in Perundurai for the current month, including resolution statistics, resource allocation, and recommendations.</p>
+                </div>
+            `;
+            document.getElementById('reportContent').innerHTML = report;
+        }
+
+        function emailTWAD() {
+            let subject = 'Perundurai Water Problem Status Report - ' + new Date().toLocaleDateString();
+            let body = `Water Problem Management Report\n\nTotal Problems: ${allProblems.length}\nResolved: ${allProblems.filter(p => p.status === 'Completed').length}\n\nThis report is generated from the Perundurai Water Problem Portal.`;
+            
+            window.location.href = `mailto:eetwadera-drws@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            alert('Email client opening...');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        function forceAction(problemId) {
+            let problem = allProblems.find(p => p.id === problemId);
+            problem.status = 'Working';
+            let idx = allProblems.findIndex(p => p.id === problemId);
+            allProblems[idx] = problem;
+            localStorage.setItem('problems', JSON.stringify(allProblems));
+            alert('Problem forced to "Working" status!');
+            loadDashboard();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentSession');
+            window.location.href = 'index.html';
+        }
+
+        window.addEventListener('load', checkLogin);
+    </script>
+</body>
+</html>

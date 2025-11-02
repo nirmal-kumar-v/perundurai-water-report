@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Perundurai Water Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #003A7A; --secondary: #FF8C00; }
+        body { font-family: 'Segoe UI', Roboto, Arial; background-color: #f8f9fa; }
+        .navbar { background-color: var(--primary); }
+        .navbar-brand { color: white !important; font-weight: 700; }
+        .navbar .nav-link { color: rgba(255,255,255,0.8) !important; }
+        footer { background-color: var(--primary); color: white; padding: 40px 0; margin-top: 60px; }
+        .metric-card { background: linear-gradient(135deg, var(--primary) 0%, #005ba8 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .metric-card h5 { font-size: 2.5rem; font-weight: 700; margin: 0; }
+        .metric-card p { margin: 5px 0 0 0; opacity: 0.9; }
+        #map { height: 500px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .table-wrapper { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .status-reported { background-color: #f8d7da; color: #721c24; }
+        .status-noted { background-color: #fff3cd; color: #856404; }
+        .status-pending { background-color: #ffe5b4; color: #ff8c00; }
+        .status-working { background-color: #d1ecf1; color: #0c5460; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .modal-content { border-radius: 12px; border: none; }
+        .form-control:focus, .form-select:focus { border-color: var(--primary); box-shadow: 0 0 0 0.2rem rgba(0, 58, 122, 0.25); }
+        .btn-primary { background-color: var(--primary); border-color: var(--primary); }
+        .btn-primary:hover { background-color: #002d5f; }
+        .chart-container { position: relative; height: 300px; margin-bottom: 30px; }
+        table tbody tr:hover { background-color: #f8f9fa; cursor: pointer; }
+        .overdue { background-color: #fff3cd !important; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html"><i class="fas fa-water"></i> Water Portal - Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><span style="color: white; margin: 0 20px;" id="adminName">Admin</span></li>
+                    <li class="nav-item"><a class="nav-link" onclick="logout()" style="cursor: pointer;">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 30px; margin-bottom: 60px;">
+        <h1 style="color: var(--primary); font-weight: 700; margin-bottom: 30px;">Admin Dashboard</h1>
+
+        <!-- Metrics Row -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h5 id="totalProblems">0</h5>
+                    <p>Total Problems</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h5 id="newToday">0</h5>
+                    <p>New Today</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h5 id="inProgress">0</h5>
+                    <p>In Progress</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h5 id="overdue">0</h5>
+                    <p style="color: #FFD700;">Overdue (>3 days)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div class="card" style="margin-bottom: 30px;">
+            <div class="card-body">
+                <h5 style="color: var(--primary); font-weight: 700; margin-bottom: 20px;">Problem Distribution Map</h5>
+                <div id="map"></div>
+                <small style="color: #999;">🔴 Reported (Urgent) | 🟠 Pending | 🟡 Noted | 🟢 Completed</small>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card" style="margin-bottom: 30px;">
+                    <div class="card-body">
+                        <h5 style="color: var(--primary); font-weight: 700;">Problems by Ward</h5>
+                        <div class="chart-container">
+                            <canvas id="wardChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="margin-bottom: 30px;">
+                    <div class="card-body">
+                        <h5 style="color: var(--primary); font-weight: 700;">Problems by Category</h5>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Problems Table -->
+        <div class="table-wrapper">
+            <h5 style="color: var(--primary); font-weight: 700; margin-bottom: 20px;">All Problems</h5>
+            <div class="mb-3">
+                <input type="text" class="form-control" id="searchBox" placeholder="Search by ID, Ward, or Category..." onkeyup="filterTable()">
+            </div>
+            <table class="table table-hover" id="problemsTable">
+                <thead style="background-color: var(--primary); color: white;">
+                    <tr>
+                        <th>ID</th>
+                        <th>Category</th>
+                        <th>Ward</th>
+                        <th>Status</th>
+                        <th>Days</th>
+                        <th>Endorsements</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4"><h5><i class="fas fa-info-circle"></i> Help</h5><p><a href="faq.html" style="color: #b3d9ff;">FAQ</a></p></div>
+                <div class="col-md-4"><h5><i class="fas fa-phone"></i> Emergency</h5><p>TWAD: 0424-2260621</p></div>
+                <div class="col-md-4"><h5><i class="fas fa-map"></i> Public Tracker</h5><p><a href="public-tracker.html" style="color: #b3d9ff;">View all problems</a></p></div>
+            </div>
+            <hr style="background-color: rgba(255,255,255,0.2);">
+            <p style="text-align: center;">&copy; 2025 Perundurai Water Problem Portal</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // ===== INITIALIZE SAMPLE DATA =====
+        function initializeSampleData() {
+            let problems = JSON.parse(localStorage.getItem('problems')) || [];
+            if (problems.length === 0) {
+                problems = [
+                    {id: 'PROB-2025-00001', userId: 'USER-DEMO-001', category: 'SIPCOT Industrial Contamination', ward: 'Ward 1', address: 'SIPCOT Gate No. 1, Perundurai 638315', status: 'Working', description: 'Heavy TDS contamination. Water brownish.', severity: 'Critical', affectedArea: 'Industrial', endorsements: 45, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 24*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 20*60*60*1000).toISOString()}, {status: 'Pending', timestamp: new Date(Date.now() - 18*60*60*1000).toISOString()}, {status: 'Working', timestamp: new Date(Date.now() - 6*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 24*60*60*1000).toISOString(), escalatedDate: null, assignedTo: 'Team A', gps: {lat: 11.2650, lng: 77.5800}},
+                    {id: 'PROB-2025-00002', userId: 'USER-DEMO-001', category: 'Low Water Pressure', ward: 'Ward 7', address: 'Velliyam Palayam, Perundurai 638312', status: 'Completed', description: 'Low pressure in morning hours.', severity: 'Medium', affectedArea: 'Residential', endorsements: 12, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 6*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 5*60*60*1000).toISOString()}, {status: 'Pending', timestamp: new Date(Date.now() - 4*60*60*1000).toISOString()}, {status: 'Working', timestamp: new Date(Date.now() - 2*60*60*1000).toISOString()}, {status: 'Completed', timestamp: new Date().toISOString()}], reportedDate: new Date(Date.now() - 6*60*60*1000).toISOString(), escalatedDate: null, assignedTo: 'Team C', gps: {lat: 11.2800, lng: 77.5900}},
+                    {id: 'PROB-2025-00003', userId: 'USER-DEMO-001', category: 'Water Discoloration', ward: 'Ward 3', address: 'Elithingal Patti, Perundurai 638311', status: 'Noted', description: 'Water color changed. Iron contamination.', severity: 'High', affectedArea: 'Residential', endorsements: 23, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 48*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 36*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 48*60*60*1000).toISOString(), escalatedDate: null, assignedTo: null, gps: {lat: 11.2750, lng: 77.5850}},
+                    {id: 'PROB-2025-00004', userId: 'USER-DEMO-001', category: 'Sewage Cross-Contamination', ward: 'Ward 12', address: 'Palap Palayam, Perundurai 638313', status: 'Pending', description: 'Sewage smell near supply point.', severity: 'High', affectedArea: 'Residential', endorsements: 8, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 24*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 20*60*60*1000).toISOString()}, {status: 'Pending', timestamp: new Date(Date.now() - 12*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 24*60*60*1000).toISOString(), escalatedDate: null, assignedTo: 'Team B', gps: {lat: 11.2700, lng: 77.5750}},
+                    {id: 'PROB-2025-00005', userId: 'USER-DEMO-001', category: 'Maintenance Delays', ward: 'Ward 15', address: 'Residential Sectors, Perundurai 638314', status: 'Reported', description: 'Pipeline broken 4 days. No repair yet.', severity: 'Critical', affectedArea: 'Residential', endorsements: 67, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 96*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 96*60*60*1000).toISOString(), escalatedDate: new Date(Date.now() - 24*60*60*1000).toISOString(), assignedTo: null, gps: {lat: 11.2600, lng: 77.5900}},
+                    {id: 'PROB-2025-00006', userId: 'USER-DEMO-001', category: 'Intermittent Supply', ward: 'Ward 5', address: 'Kasilingam Palayam, Perundurai 638310', status: 'Working', description: 'Water only 2 hours daily.', severity: 'High', affectedArea: 'Residential', endorsements: 34, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 36*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 30*60*60*1000).toISOString()}, {status: 'Pending', timestamp: new Date(Date.now() - 24*60*60*1000).toISOString()}, {status: 'Working', timestamp: new Date(Date.now() - 10*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 36*60*60*1000).toISOString(), escalatedDate: null, assignedTo: 'Team D', gps: {lat: 11.2780, lng: 77.5820}},
+                    {id: 'PROB-2025-00007', userId: 'USER-DEMO-001', category: 'Turbidity/Sediment', ward: 'Ward 2', address: 'Perundurai Town, Perundurai 638305', status: 'Completed', description: 'Water turbid with sediment.', severity: 'Medium', affectedArea: 'Commercial', endorsements: 18, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 24*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 18*60*60*1000).toISOString()}, {status: 'Working', timestamp: new Date(Date.now() - 12*60*60*1000).toISOString()}, {status: 'Completed', timestamp: new Date(Date.now() - 2*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 24*60*60*1000).toISOString(), escalatedDate: null, assignedTo: 'Team A', gps: {lat: 11.2720, lng: 77.5840}},
+                    {id: 'PROB-2025-00008', userId: 'USER-DEMO-001', category: 'Foul Odor', ward: 'Ward 4', address: 'Kuttam Palayam, Perundurai 638309', status: 'Pending', description: 'Strong chemical smell.', severity: 'Critical', affectedArea: 'Residential', endorsements: 29, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 18*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 12*60*60*1000).toISOString()}, {status: 'Pending', timestamp: new Date(Date.now() - 6*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 18*60*60*1000).toISOString(), escalatedDate: null, assignedTo: 'Team C', gps: {lat: 11.2760, lng: 77.5880}},
+                    {id: 'PROB-2025-00009', userId: 'USER-DEMO-001', category: 'Meter/Billing Issues', ward: 'Ward 8', address: 'Ingur, Perundurai 638316', status: 'Completed', description: 'Meter showing wrong reading.', severity: 'Low', affectedArea: 'Residential', endorsements: 5, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 24*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 20*60*60*1000).toISOString()}, {status: 'Working', timestamp: new Date(Date.now() - 12*60*60*1000).toISOString()}, {status: 'Completed', timestamp: new Date(Date.now() - 8*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 24*60*60*1000).toISOString(), escalatedDate: null, assignedTo: 'Team B', gps: {lat: 11.2850, lng: 77.5950}},
+                    {id: 'PROB-2025-00010', userId: 'USER-DEMO-001', category: 'Heavy Metal Contamination', ward: 'Ward 6', address: 'Kadappamadi, Perundurai 638308', status: 'Working', description: 'Iron & fluoride beyond safe limits.', severity: 'Critical', affectedArea: 'Residential', endorsements: 41, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 30*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 24*60*60*1000).toISOString()}, {status: 'Pending', timestamp: new Date(Date.now() - 18*60*60*1000).toISOString()}, {status: 'Working', timestamp: new Date(Date.now() - 16*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 30*60*60*1000).toISOString(), escalatedDate: null, assignedTo: 'Team D', gps: {lat: 11.2710, lng: 77.5760}},
+                    {id: 'PROB-2025-00011', userId: 'USER-DEMO-001', category: 'Drainage & Flooding', ward: 'Ward 9', address: 'Kambaliyam Patti, Perundurai 638312', status: 'Noted', description: 'Stagnant water near supply.', severity: 'High', affectedArea: 'Residential', endorsements: 16, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 42*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 36*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 42*60*60*1000).toISOString(), escalatedDate: null, assignedTo: null, gps: {lat: 11.2820, lng: 77.5870}},
+                    {id: 'PROB-2025-00012', userId: 'USER-DEMO-001', category: 'Pipeline Leak', ward: 'Ward 11', address: 'Sarali, Perundurai 638314', status: 'Working', description: 'Water leaking from pipeline.', severity: 'Medium', affectedArea: 'Residential', endorsements: 22, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 18*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 16*60*60*1000).toISOString()}, {status: 'Pending', timestamp: new Date(Date.now() - 12*60*60*1000).toISOString()}, {status: 'Working', timestamp: new Date(Date.now() - 8*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 18*60*60*1000).toISOString(), escalatedDate: null, assignedTo: 'Team A', gps: {lat: 11.2790, lng: 77.5810}},
+                    {id: 'PROB-2025-00013', userId: 'USER-DEMO-001', category: 'Water Tanker Quality Issues', ward: 'Ward 10', address: 'Periyavettu Palayam, Perundurai 638311', status: 'Completed', description: 'Tanker water contaminated.', severity: 'High', affectedArea: 'Residential', endorsements: 14, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 20*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 16*60*60*1000).toISOString()}, {status: 'Working', timestamp: new Date(Date.now() - 12*60*60*1000).toISOString()}, {status: 'Completed', timestamp: new Date(Date.now() - 10*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 20*60*60*1000).toISOString(), escalatedDate: null, assignedTo: 'Team C', gps: {lat: 11.2770, lng: 77.5900}},
+                    {id: 'PROB-2025-00014', userId: 'USER-DEMO-001', category: 'Maintenance Delays', ward: 'Ward 13', address: 'Varap Palayam, Perundurai 638315', status: 'Reported', description: 'Broken pipe for 2 days.', severity: 'High', affectedArea: 'Residential', endorsements: 9, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 48*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 48*60*60*1000).toISOString(), escalatedDate: new Date(Date.now() - 24*60*60*1000).toISOString(), assignedTo: null, gps: {lat: 11.2730, lng: 77.5920}},
+                    {id: 'PROB-2025-00015', userId: 'USER-DEMO-001', category: 'SIPCOT Industrial Contamination', ward: 'Ward 14', address: 'Karuppa Goundar Pudur, Perundurai 638316', status: 'Noted', description: 'Textile factory discharge.', severity: 'Critical', affectedArea: 'Industrial', endorsements: 38, endorsedBy: [], comments: [], timeline: [{status: 'Reported', timestamp: new Date(Date.now() - 54*60*60*1000).toISOString()}, {status: 'Noted', timestamp: new Date(Date.now() - 30*60*60*1000).toISOString()}], reportedDate: new Date(Date.now() - 54*60*60*1000).toISOString(), escalatedDate: null, assignedTo: null, gps: {lat: 11.2680, lng: 77.5880}}
+                ];
+                localStorage.setItem('problems', JSON.stringify(problems));
+            }
+        }
+
+        let map;
+        let markers = [];
+        let allProblems = [];
+        let currentProblem = null;
+        let wardChart, categoryChart;
+
+        function checkLogin() {
+            let session = JSON.parse(localStorage.getItem('currentSession'));
+            if (!session || session.userType !== 'admin') {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+            document.getElementById('adminName').textContent = 'Admin: Administrator';
+            loadDashboard();
+        }
+
+        function initMap() {
+            map = L.map('map').setView([11.2747, 77.5823], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        }
+
+        function loadDashboard() {
+            allProblems = JSON.parse(localStorage.getItem('problems')) || [];
+            updateMetrics();
+            displayProblems();
+            displayMapMarkers();
+            createCharts();
+        }
+
+        function updateMetrics() {
+            let today = new Date().toDateString();
+            document.getElementById('totalProblems').textContent = allProblems.length;
+            document.getElementById('newToday').textContent = allProblems.filter(p => new Date(p.reportedDate).toDateString() === today).length;
+            document.getElementById('inProgress').textContent = allProblems.filter(p => ['Pending', 'Working'].includes(p.status)).length;
+            
+            let overdue = 0;
+            allProblems.forEach(p => {
+                let days = Math.floor((new Date() - new Date(p.reportedDate)) / (1000 * 60 * 60 * 24));
+                if (p.status !== 'Completed' && days > 3) overdue++;
+            });
+            document.getElementById('overdue').textContent = overdue;
+        }
+
+        function displayProblems() {
+            let html = '';
+            allProblems.forEach(problem => {
+                let days = Math.floor((new Date() - new Date(problem.reportedDate)) / (1000 * 60 * 60 * 24));
+                let isOverdue = problem.status !== 'Completed' && days > 3;
+                
+                html += `
+                    <tr ${isOverdue ? 'class="overdue"' : ''}>
+                        <td><strong>${problem.id}</strong></td>
+                        <td>${problem.category}</td>
+                        <td>${problem.ward}</td>
+                        <td><span class="status-badge status-${problem.status.toLowerCase()}">${problem.status}</span></td>
+                        <td>${days} days</td>
+                        <td>👍 ${problem.endorsements || 0}</td>
+                        <td><button class="btn btn-sm btn-primary">View</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('tableBody').innerHTML = html;
+        }
+
+        function displayMapMarkers() {
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            allProblems.forEach(problem => {
+                if (problem.gps) {
+                    let color;
+                    switch(problem.status) {
+                        case 'Reported': color = '#DC3545'; break;
+                        case 'Noted': color = '#FFC107'; break;
+                        case 'Pending': color = '#FF8C00'; break;
+                        case 'Working': color = '#0dcaf0'; break;
+                        case 'Completed': color = '#28A745'; break;
+                        default: color = '#999'; break;
+                    }
+
+                    let marker = L.circleMarker([problem.gps.lat, problem.gps.lng], {
+                        radius: 8,
+                        fillColor: color,
+                        color: '#fff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).bindPopup(`<strong>${problem.id}</strong><br>${problem.category}<br>${problem.ward}<br>Status: ${problem.status}`);
+
+                    markers.push(marker);
+                    marker.addTo(map);
+                }
+            });
+        }
+
+        function createCharts() {
+            // Ward chart
+            let wards = {};
+            allProblems.forEach(p => {
+                wards[p.ward] = (wards[p.ward] || 0) + 1;
+            });
+
+            let wardCtx = document.getElementById('wardChart').getContext('2d');
+            if (wardChart) wardChart.destroy();
+            wardChart = new Chart(wardCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(wards).sort(),
+                    datasets: [{
+                        label: 'Problems',
+                        data: Object.values(wards),
+                        backgroundColor: 'var(--primary)',
+                        borderRadius: 5
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Category chart
+            let categories = {};
+            allProblems.forEach(p => {
+                categories[p.category] = (categories[p.category] || 0) + 1;
+            });
+
+            let catCtx = document.getElementById('categoryChart').getContext('2d');
+            if (categoryChart) categoryChart.destroy();
+            categoryChart = new Chart(catCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categories),
+                    datasets: [{
+                        data: Object.values(categories),
+                        backgroundColor: ['#003A7A', '#FF8C00', '#DC3545', '#28A745', '#0dcaf0', '#FFC107', '#6f42c1', '#20c997', '#fd7e14', '#6610f2', '#e83e8c', '#dc3545']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function filterTable() {
+            let filter = document.getElementById('searchBox').value.toLowerCase();
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('currentSession');
+            window.location.href = 'index.html';
+        }
+
+        window.addEventListener('load', () => {
+            initializeSampleData();
+            checkLogin();
+            initMap();
+        });
+    </script>
+</body>
+</html>

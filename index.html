@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perundurai Water Problem Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #003A7A;
+            --secondary: #FF8C00;
+            --danger: #DC3545;
+            --success: #28A745;
+            --warning: #FFC107;
+            --dark-bg: #1a1a1a;
+            --light-text: #f0f0f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-brand i {
+            font-size: 2rem;
+        }
+
+        .navbar .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            margin: 0 10px;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .navbar .nav-link:hover {
+            color: white !important;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: var(--primary);
+            color: white;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+
+        footer a {
+            color: #b3d9ff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #005ba8 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 30px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        body.dark-mode .card {
+            background-color: #2a2a2a;
+            color: var(--light-text);
+            border: 1px solid #3a3a3a;
+        }
+
+        /* Status Badges */
+        .badge-reported {
+            background-color: #DC3545;
+        }
+
+        .badge-noted {
+            background-color: #FFC107;
+            color: black;
+        }
+
+        .badge-pending {
+            background-color: #FF8C00;
+        }
+
+        .badge-working {
+            background-color: #0dcaf0;
+        }
+
+        .badge-completed {
+            background-color: #28A745;
+        }
+
+        .badge-escalated {
+            background-color: #6c757d;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: #002d5f;
+            border-color: #002d5f;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            border-color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e07a00;
+            border-color: #e07a00;
+        }
+
+        /* Form Styles */
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            font-size: 1rem;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(0, 58, 122, 0.25);
+        }
+
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #3a3a3a;
+            color: var(--light-text);
+            border-color: #4a4a4a;
+        }
+
+        /* Alert Styles */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 15px 20px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        body.dark-mode .alert {
+            border-left: 4px solid;
+        }
+
+        /* Statistics Widget */
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #005ba8 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+        }
+
+        body.dark-mode .modal-content {
+            background-color: #2a2a2a;
+            color: var(--light-text);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        body.dark-mode .sidebar {
+            background-color: #2a2a2a;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 15px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        body.dark-mode .sidebar-menu a {
+            color: var(--light-text);
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Tabs */
+        .nav-tabs {
+            border-bottom: 2px solid #ddd;
+        }
+
+        .nav-tabs .nav-link {
+            color: #333;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+        }
+
+        body.dark-mode .nav-tabs .nav-link {
+            color: var(--light-text);
+        }
+
+        .nav-tabs .nav-link:hover {
+            border-bottom-color: var(--primary);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: transparent;
+            border-bottom-color: var(--primary);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            padding-left: 50px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px var(--primary);
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 30px;
+            width: 2px;
+            height: calc(100% + 10px);
+            background-color: #ddd;
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-item.completed::before {
+            background-color: var(--success);
+            box-shadow: 0 0 0 3px var(--success);
+        }
+
+        .timeline-item.pending::before {
+            background-color: var(--warning);
+            box-shadow: 0 0 0 3px var(--warning);
+        }
+
+        /* Map Container */
+        #map, #mapContainer {
+            height: 500px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Feature Cards */
+        .feature-card {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .feature-card i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 40px;
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: white;
+            transition: transform 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.2);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 58, 122, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .sidebar {
+                position: relative;
+                top: auto;
+                margin-bottom: 30px;
+            }
+
+            .stat-card h3 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Problem Card */
+        .problem-card {
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s;
+        }
+
+        .problem-card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border-left-color: var(--secondary);
+        }
+
+        /* Notification Toast */
+        .toast {
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Image Preview */
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-top: 10px;
+        }
+
+        /* QR Code */
+        .qr-code {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        /* Endorsement Button */
+        .endorse-btn {
+            font-size: 1.5rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        .endorse-btn:hover,
+        .endorse-btn.endorsed {
+            color: #DC3545;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">
+                <i class="fas fa-water"></i>
+                <span>Perundurai Water Portal</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="contact.html">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="public-tracker.html">Public Tracker</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button" data-bs-toggle="dropdown">
+                            Login
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="user-login.html">User Login</a></li>
+                            <li><a class="dropdown-item" href="admin-login.html">Admin Login</a></li>
+                            <li><a class="dropdown-item" href="supreme-login.html">Supreme Login</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="user-register.html" style="font-weight: 600; color: #FFD700;">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="container">
+            <h1><i class="fas fa-exclamation-triangle"></i> Perundurai Water Problem Portal</h1>
+            <p>Report, Track & Resolve Water Issues in Your Community</p>
+            <div class="row text-center mt-4">
+                <div class="col-md-3">
+                    <h3 id="totalProblems">0</h3>
+                    <p>Problems Reported</p>
+                </div>
+                <div class="col-md-3">
+                    <h3 id="resolvedProblems">0</h3>
+                    <p>Problems Resolved</p>
+                </div>
+                <div class="col-md-3">
+                    <h3 id="activeProblems">0</h3>
+                    <p>Active Problems</p>
+                </div>
+                <div class="col-md-3">
+                    <h3 id="resolutionRate">0%</h3>
+                    <p>Resolution Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mb-5">
+        <!-- Features Section -->
+        <div class="row mb-5">
+            <h2 class="text-center mb-4" style="font-weight: 700; color: var(--primary);">How It Works</h2>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="feature-card">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>Report</h3>
+                        <p>Register with your Aadhaar and report water problems with photo evidence from your location.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="feature-card">
+                        <i class="fas fa-map"></i>
+                        <h3>Track</h3>
+                        <p>Monitor your problems on our interactive map with real-time status updates and notifications.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="feature-card">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Resolve</h3>
+                        <p>Admins respond within 72 hours. Get complete transparency with photo proof of resolution.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="row mb-5">
+            <div class="col-md-12 text-center">
+                <h3 style="font-weight: 700; margin-bottom: 30px;">Get Started Now</h3>
+                <a href="user-register.html" class="btn btn-primary btn-lg" style="margin-right: 15px;">
+                    <i class="fas fa-user-plus"></i> Register Now
+                </a>
+                <a href="user-login.html" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> User Login
+                </a>
+            </div>
+        </div>
+
+        <!-- Problem Categories -->
+        <div class="row mb-5">
+            <h2 class="text-center mb-4" style="font-weight: 700; color: var(--primary);">Water Problem Categories</h2>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5><i class="fas fa-industry"></i> Industrial Contamination</h5>
+                        <p>SIPCOT-related pollution affecting multiple wards</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5><i class="fas fa-tint"></i> Water Quality Issues</h5>
+                        <p>Discoloration, turbidity, odor, and heavy metals</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5><i class="fas fa-pipe"></i> Supply Problems</h5>
+                        <p>Low pressure, intermittent supply, leakages</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5><i class="fas fa-exclamation"></i> Infrastructure Issues</h5>
+                        <p>Drainage problems, sewage contamination</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5><i class="fas fa-tools"></i> Maintenance Issues</h5>
+                        <p>Delayed repairs and maintenance services</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <h5><i class="fas fa-receipt"></i> Billing Issues</h5>
+                        <p>Meter problems and billing discrepancies</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About SIPCOT Crisis -->
+        <div class="alert alert-danger" style="margin-bottom: 50px;">
+            <h4><i class="fas fa-exclamation-circle"></i> Critical Issue: SIPCOT Contamination</h4>
+            <p><strong>TWAD Study 2025:</strong> Groundwater in 25+ villages around Perundurai contains TDS levels of 2000+ mg/L (4x the safe limit of 500-1500), with heavy metal contamination from 77 industries in SIPCOT complex. This portal was created to address this documented crisis through transparency and accountability.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5><i class="fas fa-info-circle"></i> About</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-sign-in-alt"></i> Access</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li><a href="user-login.html">User Login</a></li>
+                        <li><a href="admin-login.html">Admin Login</a></li>
+                        <li><a href="supreme-login.html">Supreme Login</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-map-marker-alt"></i> Emergency</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>TWAD: 0424-2260621</li>
+                        <li>Maintenance: 0424-2269891</li>
+                        <li>Lab: (0424) 2534594</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-moon"></i> Settings</h5>
+                    <button class="btn btn-outline-light btn-sm" onclick="toggleDarkMode()">
+                        <i class="fas fa-moon"></i> Dark Mode
+                    </button>
+                </div>
+            </div>
+            <hr style="background-color: rgba(255,255,255,0.2);">
+            <div class="text-center">
+                <p>&copy; 2025 Perundurai Water Problem Portal. All Rights Reserved.</p>
+                <p style="font-size: 0.9rem;">Built to solve real water problems through transparency and accountability.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize app on homepage
+        function initializeHomepage() {
+            updateStatistics();
+        }
+
+        function updateStatistics() {
+            let problems = JSON.parse(localStorage.getItem('problems')) || [];
+            let totalProblems = problems.length;
+            let resolvedProblems = problems.filter(p => p.status === 'Completed').length;
+            let activeProblems = problems.filter(p => p.status !== 'Completed').length;
+            let resolutionRate = totalProblems > 0 ? Math.round((resolvedProblems / totalProblems) * 100) : 0;
+
+            document.getElementById('totalProblems').textContent = totalProblems;
+            document.getElementById('resolvedProblems').textContent = resolvedProblems;
+            document.getElementById('activeProblems').textContent = activeProblems;
+            document.getElementById('resolutionRate').textContent = resolutionRate + '%';
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Check for dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Initialize if this is homepage
+        if (document.body.innerHTML.includes('totalProblems')) {
+            initializeHomepage();
+        }
+
+        // Refresh statistics every 5 seconds
+        setInterval(updateStatistics, 5000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Perundurai Water Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #003A7A; --secondary: #FF8C00; --danger: #DC3545; }
+        body { font-family: 'Segoe UI', Roboto, Arial; background-color: #f8f9fa; }
+        .navbar { background-color: var(--primary); }
+        .navbar-brand { color: white !important; font-weight: 700; }
+        .navbar .nav-link { color: rgba(255,255,255,0.8) !important; }
+        .navbar .nav-link:hover { color: white !important; }
+        footer { background-color: var(--primary); color: white; padding: 40px 0; margin-top: 60px; }
+        footer a { color: #b3d9ff; }
+        .page-header { background: linear-gradient(135deg, var(--primary) 0%, #005ba8 100%); color: white; padding: 60px 0; text-align: center; }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; }
+        .content-section { padding: 40px 0; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .contact-card { border-left: 4px solid var(--primary); }
+        .contact-card h5 { color: var(--primary); font-weight: 700; }
+        .contact-info { margin-bottom: 15px; }
+        .contact-info i { color: var(--secondary); font-size: 1.2rem; margin-right: 10px; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 0.2rem rgba(0, 58, 122, 0.25); }
+        .btn-primary { background-color: var(--primary); border-color: var(--primary); }
+        .btn-primary:hover { background-color: #002d5f; }
+        .emergency-box { background-color: #f8d7da; border: 2px solid var(--danger); border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+        .emergency-box h3 { color: var(--danger); }
+        .twad-section { margin: 40px 0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="fas fa-water"></i> Water Portal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="contact.html">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="public-tracker.html">Tracker</a></li>
+                    <li class="nav-item"><a class="nav-link" href="user-login.html">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-phone"></i> Contact Us</h1>
+            <p>Get in Touch with Authorities & Support</p>
+        </div>
+    </div>
+
+    <div class="container content-section">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="emergency-box">
+                    <h3><i class="fas fa-exclamation-circle"></i> EMERGENCY WATER ISSUES</h3>
+                    <p>For immediate water-related emergencies, contact TWAD directly:</p>
+                    <p style="font-size: 1.3rem; font-weight: 700; margin-bottom: 0;">
+                        <i class="fas fa-phone-alt"></i> <strong>0424-2260621</strong>
+                    </p>
+                </div>
+
+                <h2 style="color: var(--primary); font-weight: 700; margin: 40px 0 20px;">Water Department Contacts</h2>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card contact-card">
+                            <div class="card-body">
+                                <h5><i class="fas fa-water"></i> TWAD RWS Division, Erode</h5>
+                                <div class="contact-info">
+                                    <i class="fas fa-phone"></i> <strong>0424-2260621</strong>
+                                </div>
+                                <div class="contact-info">
+                                    <i class="fas fa-envelope"></i> eetwadera-drws@gmail.com
+                                </div>
+                                <div class="contact-info">
+                                    <i class="fas fa-map-marker-alt"></i> 
+                                    <small>TWAD Board, No.155, Dhanvikas Complex, Nehru Street, Govindaraj Nagar, Erode - 638001</small>
+                                </div>
+                                <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                                    <strong>Role:</strong> Regular Water Supply Division - Responsible for water supply schemes and distribution
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card contact-card">
+                            <div class="card-body">
+                                <h5><i class="fas fa-tools"></i> TWAD Maintenance Division</h5>
+                                <div class="contact-info">
+                                    <i class="fas fa-phone"></i> <strong>0424-2269891</strong>
+                                </div>
+                                <div class="contact-info">
+                                    <i class="fas fa-envelope"></i> eemainerd@gmail.com
+                                </div>
+                                <div class="contact-info">
+                                    <i class="fas fa-map-marker-alt"></i> 
+                                    <small>TWAD Board, No.71, Poonkunranar Street, Karungalpalayam, Erode - 638003</small>
+                                </div>
+                                <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                                    <strong>Role:</strong> Maintenance & Repairs Division - Handles pipeline repairs, maintenance, and emergency responses
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-12">
+                        <div class="card contact-card">
+                            <div class="card-body">
+                                <h5><i class="fas fa-flask"></i> District Water Testing Laboratory</h5>
+                                <div class="contact-info">
+                                    <i class="fas fa-phone"></i> <strong>(0424) 2534594</strong>
+                                </div>
+                                <div class="contact-info">
+                                    <i class="fas fa-map-marker-alt"></i> 
+                                    <small>TWAD Board, Jaouli Nagar, Near Suriyampalayam Town Panchayat Office, Ramanathapuram Pudur, Erode - 638005</small>
+                                </div>
+                                <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                                    <strong>Role:</strong> Water Quality Testing - Conducts water quality analysis and testing for contamination
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-12">
+                        <div class="card contact-card">
+                            <div class="card-body">
+                                <h5><i class="fas fa-building"></i> TWAD Board Headquarters (Escalation)</h5>
+                                <div class="contact-info">
+                                    <i class="fas fa-phone"></i> <strong>044-2841 6420</strong> (Toll Free)
+                                </div>
+                                <div class="contact-info">
+                                    <i class="fas fa-map-marker-alt"></i> 
+                                    <small>31, Kamarajar Salai, Chepauk, Chennai - 600005</small>
+                                </div>
+                                <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                                    <strong>Role:</strong> TWAD Central Authority - For escalations and policy matters
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="color: var(--primary); font-weight: 700; margin: 40px 0 20px;">Send Us a Message</h2>
+
+                <form id="contactForm" style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" placeholder="Your name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" placeholder="your@email.com" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="ward" class="form-label">Ward/Location</label>
+                        <select class="form-control" id="ward">
+                            <option value="">Select Ward</option>
+                            <option value="Ward 1">Ward 1 - SIPCOT Industrial Area</option>
+                            <option value="Ward 2">Ward 2 - Perundurai Town Center</option>
+                            <option value="Ward 3">Ward 3 - Elithingal Patti</option>
+                            <option value="Ward 4">Ward 4 - Kuttam Palayam</option>
+                            <option value="Ward 5">Ward 5 - Kasilingam Palayam</option>
+                            <option value="Ward 6">Ward 6 - Kadappamadi</option>
+                            <option value="Ward 7">Ward 7 - Velliyam Palayam</option>
+                            <option value="Ward 8">Ward 8 - Ingur</option>
+                            <option value="Ward 9">Ward 9 - Kambaliyam Patti</option>
+                            <option value="Ward 10">Ward 10 - Periyavettu Palayam</option>
+                            <option value="Ward 11">Ward 11 - Sarali</option>
+                            <option value="Ward 12">Ward 12 - Palap Palayam</option>
+                            <option value="Ward 13">Ward 13 - Varap Palayam</option>
+                            <option value="Ward 14">Ward 14 - Karuppa Goundar Pudur</option>
+                            <option value="Ward 15">Ward 15 - Residential Sectors</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="subject" placeholder="What is this about?" required>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control" id="message" rows="5" placeholder="Your message..." required></textarea>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="agree" required>
+                            <label class="form-check-label" for="agree">
+                                I agree to send this message to the water department
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg">Send Message</button>
+                    <div class="alert alert-success mt-3" id="successMessage" style="display: none;">
+                        <i class="fas fa-check-circle"></i> Message sent successfully!
+                    </div>
+                </form>
+
+                <h2 style="color: var(--primary); font-weight: 700; margin: 40px 0 20px;">Frequently Asked Questions</h2>
+
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                How do I report a water problem?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Click "Register" on homepage, create account with Aadhaar and photo, then go to your dashboard and click "Report New Problem". Select category, ward, upload photo evidence, and submit.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                How long does it take to resolve problems?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Admin must acknowledge within 24 hours. If no action within 72 hours, problem escalates to Supreme Authority. Average resolution time is 1.5-2 days.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                Can I remain anonymous?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                No. Your Aadhaar number is required for registration. This prevents false complaints and creates accountability. Your privacy is protected.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                What if my problem is urgent/emergency?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                For emergencies, call TWAD directly at 0424-2260621 (RWS Division) or 0424-2269891 (Maintenance). Report on our portal as well for tracking.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                Can I see other people's problems on the map?
+                            </button>
+                        </h2>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes! Visit "Public Tracker" page. Anyone can view all reported problems on a live map without logging in. This promotes transparency.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5><i class="fas fa-info-circle"></i> About</h5>
+                    <ul style="list-style: none;">
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-sign-in-alt"></i> Access</h5>
+                    <ul style="list-style: none;">
+                        <li><a href="user-login.html">User Login</a></li>
+                        <li><a href="admin-login.html">Admin Login</a></li>
+                        <li><a href="public-tracker.html">Public Tracker</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-phone"></i> Emergency</h5>
+                    <ul style="list-style: none;">
+                        <li>TWAD: 0424-2260621</li>
+                        <li>Maintenance: 0424-2269891</li>
+                        <li>Lab: (0424) 2534594</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-cog"></i> Settings</h5>
+                    <button class="btn btn-outline-light btn-sm" onclick="toggleDarkMode()">
+                        <i class="fas fa-moon"></i> Dark Mode
+                    </button>
+                </div>
+            </div>
+            <hr style="background-color: rgba(255,255,255,0.2);">
+            <div class="text-center">
+                <p>&copy; 2025 Perundurai Water Problem Portal</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let messages = JSON.parse(localStorage.getItem('contactMessages')) || [];
+            messages.push({
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                ward: document.getElementById('ward').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('contactMessages', JSON.stringify(messages));
+            
+            document.getElementById('successMessage').style.display = 'block';
+            document.getElementById('contactForm').reset();
+            
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 3000);
+        });
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+    </script>
+</body>
+</html>

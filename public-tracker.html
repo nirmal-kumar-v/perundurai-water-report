@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public Tracker - Perundurai Water Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #003A7A; --secondary: #FF8C00; }
+        body { font-family: 'Segoe UI', Roboto, Arial; background-color: #f8f9fa; }
+        .navbar { background-color: var(--primary); }
+        .navbar-brand { color: white !important; font-weight: 700; }
+        .navbar .nav-link { color: rgba(255,255,255,0.8) !important; }
+        footer { background-color: var(--primary); color: white; padding: 40px 0; }
+        #map { height: 500px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .stats-card { background: linear-gradient(135deg, var(--primary) 0%, #005ba8 100%); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
+        .stats-card h3 { font-size: 2rem; font-weight: 700; margin-bottom: 5px; }
+        .problem-item { border-left: 4px solid var(--primary); padding: 15px; background: white; margin-bottom: 15px; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .problem-item:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .status-reported { background-color: #f8d7da; color: #721c24; }
+        .status-noted { background-color: #fff3cd; color: #856404; }
+        .status-pending { background-color: #ffe5b4; color: #ff8c00; }
+        .status-working { background-color: #d1ecf1; color: #0c5460; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+        .filter-section { background: white; padding: 20px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="fas fa-water"></i> Water Portal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="public-tracker.html">Tracker</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="user-login.html">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 mb-5">
+        <h1 style="color: var(--primary); font-weight: 700; margin-bottom: 10px;">
+            <i class="fas fa-map-marker-alt"></i> Public Problem Tracker
+        </h1>
+        <p style="color: #666; margin-bottom: 30px;">View all reported water problems in Perundurai. No login required.</p>
+
+        <!-- Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 id="totalStats">0</h3>
+                    <p>Total Problems</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 id="completedStats">0</h3>
+                    <p>Completed Today</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 id="activeStats">0</h3>
+                    <p>Active Now</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <h3 id="rateStats">0%</h3>
+                    <p>Resolution Rate</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="form-label">Filter by Category</label>
+                    <select class="form-select" id="categoryFilter" onchange="filterProblems()">
+                        <option value="">All Categories</option>
+                        <option value="SIPCOT Industrial Contamination">SIPCOT Industrial Contamination</option>
+                        <option value="Heavy Metal Contamination">Heavy Metal Contamination</option>
+                        <option value="Low Water Pressure">Low Water Pressure</option>
+                        <option value="Intermittent Supply">Intermittent Supply</option>
+                        <option value="Sewage Cross-Contamination">Sewage Cross-Contamination</option>
+                        <option value="Water Discoloration">Water Discoloration</option>
+                        <option value="Turbidity/Sediment">Turbidity/Sediment</option>
+                        <option value="Foul Odor">Foul Odor</option>
+                        <option value="Water Tanker Quality Issues">Water Tanker Quality Issues</option>
+                        <option value="Meter/Billing Issues">Meter/Billing Issues</option>
+                        <option value="Drainage & Flooding">Drainage & Flooding</option>
+                        <option value="Maintenance Delays">Maintenance Delays</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Filter by Ward</label>
+                    <select class="form-select" id="wardFilter" onchange="filterProblems()">
+                        <option value="">All Wards</option>
+                        <option value="Ward 1">Ward 1 - SIPCOT Industrial Area</option>
+                        <option value="Ward 2">Ward 2 - Perundurai Town Center</option>
+                        <option value="Ward 3">Ward 3 - Elithingal Patti</option>
+                        <option value="Ward 4">Ward 4 - Kuttam Palayam</option>
+                        <option value="Ward 5">Ward 5 - Kasilingam Palayam</option>
+                        <option value="Ward 6">Ward 6 - Kadappamadi</option>
+                        <option value="Ward 7">Ward 7 - Velliyam Palayam</option>
+                        <option value="Ward 8">Ward 8 - Ingur</option>
+                        <option value="Ward 9">Ward 9 - Kambaliyam Patti</option>
+                        <option value="Ward 10">Ward 10 - Periyavettu Palayam</option>
+                        <option value="Ward 11">Ward 11 - Sarali</option>
+                        <option value="Ward 12">Ward 12 - Palap Palayam</option>
+                        <option value="Ward 13">Ward 13 - Varap Palayam</option>
+                        <option value="Ward 14">Ward 14 - Karuppa Goundar Pudur</option>
+                        <option value="Ward 15">Ward 15 - Residential Sectors</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Filter by Status</label>
+                    <select class="form-select" id="statusFilter" onchange="filterProblems()">
+                        <option value="">All Status</option>
+                        <option value="Reported">Reported</option>
+                        <option value="Noted">Noted</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Working">Working</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Escalated">Escalated</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div id="map" class="mb-4"></div>
+
+        <!-- Problems List -->
+        <h3 style="color: var(--primary); font-weight: 700; margin: 30px 0 20px;">All Problems</h3>
+        <div id="problemsList"></div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5><i class="fas fa-info-circle"></i> About</h5>
+                    <ul style="list-style: none;">
+                        <li><a href="about.html" style="color: #b3d9ff; text-decoration: none;">About Us</a></li>
+                        <li><a href="contact.html" style="color: #b3d9ff; text-decoration: none;">Contact</a></li>
+                        <li><a href="faq.html" style="color: #b3d9ff; text-decoration: none;">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-sign-in-alt"></i> Access</h5>
+                    <ul style="list-style: none;">
+                        <li><a href="user-login.html" style="color: #b3d9ff; text-decoration: none;">User Login</a></li>
+                        <li><a href="admin-login.html" style="color: #b3d9ff; text-decoration: none;">Admin Login</a></li>
+                        <li><a href="user-register.html" style="color: #b3d9ff; text-decoration: none;">Register</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-phone"></i> Emergency</h5>
+                    <ul style="list-style: none;">
+                        <li>TWAD: 0424-2260621</li>
+                        <li>Maintenance: 0424-2269891</li>
+                        <li>Lab: (0424) 2534594</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-cog"></i> Settings</h5>
+                    <button class="btn btn-outline-light btn-sm" onclick="toggleDarkMode()">
+                        <i class="fas fa-moon"></i> Dark Mode
+                    </button>
+                </div>
+            </div>
+            <hr style="background-color: rgba(255,255,255,0.2);">
+            <div class="text-center">
+                <p>&copy; 2025 Perundurai Water Problem Portal</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script>
+        let map;
+        let markers = [];
+        let allProblems = [];
+
+        function initMap() {
+            map = L.map('map').setView([11.2747, 77.5823], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+            loadProblems();
+        }
+
+        function loadProblems() {
+            allProblems = JSON.parse(localStorage.getItem('problems')) || [];
+            updateStats();
+            displayProblems();
+            displayMapMarkers();
+        }
+
+        function updateStats() {
+            let total = allProblems.length;
+            let completed = allProblems.filter(p => p.status === 'Completed' && p.reportedDate && new Date(p.reportedDate).toDateString() === new Date().toDateString()).length;
+            let active = allProblems.filter(p => p.status !== 'Completed').length;
+            let rate = total > 0 ? Math.round((allProblems.filter(p => p.status === 'Completed').length / total) * 100) : 0;
+
+            document.getElementById('totalStats').textContent = total;
+            document.getElementById('completedStats').textContent = completed;
+            document.getElementById('activeStats').textContent = active;
+            document.getElementById('rateStats').textContent = rate + '%';
+        }
+
+        function getStatusClass(status) {
+            const classes = {
+                'Reported': 'status-reported',
+                'Noted': 'status-noted',
+                'Pending': 'status-pending',
+                'Working': 'status-working',
+                'Completed': 'status-completed',
+                'Escalated': 'status-escalated'
+            };
+            return classes[status] || 'status-reported';
+        }
+
+        function displayProblems() {
+            let category = document.getElementById('categoryFilter').value;
+            let ward = document.getElementById('wardFilter').value;
+            let status = document.getElementById('statusFilter').value;
+
+            let filtered = allProblems.filter(p => {
+                let matchCategory = !category || p.category === category;
+                let matchWard = !ward || p.ward.includes(ward);
+                let matchStatus = !status || p.status === status;
+                return matchCategory && matchWard && matchStatus;
+            });
+
+            let html = '';
+            filtered.forEach(problem => {
+                html += `
+                    <div class="problem-item" onclick="viewProblem('${problem.id}')">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 style="color: var(--primary); font-weight: 700;">${problem.id}</h5>
+                                <p style="margin: 5px 0;"><strong>${problem.category}</strong></p>
+                                <p style="margin: 5px 0; color: #666;">${problem.ward}</p>
+                            </div>
+                            <span class="status-badge ${getStatusClass(problem.status)}">${problem.status}</span>
+                        </div>
+                        <p style="margin-top: 10px; color: #666;">👍 ${problem.endorsements || 0} endorsements</p>
+                    </div>
+                `;
+            });
+
+            document.getElementById('problemsList').innerHTML = html || '<p class="text-center text-muted">No problems found</p>';
+        }
+
+        function displayMapMarkers() {
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            allProblems.forEach(problem => {
+                if (problem.gps) {
+                    let color;
+                    switch(problem.status) {
+                        case 'Reported': color = '#DC3545'; break;
+                        case 'Noted': color = '#FFC107'; break;
+                        case 'Pending': color = '#FF8C00'; break;
+                        case 'Working': color = '#0dcaf0'; break;
+                        case 'Completed': color = '#28A745'; break;
+                        default: color = '#999'; break;
+                    }
+
+                    let marker = L.marker([problem.gps.lat, problem.gps.lng], {
+                        icon: L.icon({
+                            iconUrl: `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIzMiIgdmlld0JveD0iMCAwIDI0IDMyIj48cGF0aCBmaWxsPSIke2NvbG9yfSIgZD0iTTEyIDAgQzUgMCAwIDUgMCAxMmMwIDExIDEyIDIwIDEyIDIwczEyLTkgMTItMjBjMC03LTUtMTItMTItMTJ6Ii8+PC9zdmc+`,
+                            iconSize: [24, 32],
+                            iconAnchor: [12, 32]
+                        })
+                    }).bindPopup(`<strong>${problem.id}</strong><br>${problem.category}<br>Status: ${problem.status}`);
+
+                    markers.push(marker);
+                    marker.addTo(map);
+                }
+            });
+        }
+
+        function filterProblems() {
+            displayProblems();
+            displayMapMarkers();
+        }
+
+        function viewProblem(problemId) {
+            window.location.href = `problem-public-view.html?id=${problemId}`;
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initMap);
+        
+        // Refresh every 10 seconds
+        setInterval(loadProblems, 10000);
+    </script>
+</body>
+</html>

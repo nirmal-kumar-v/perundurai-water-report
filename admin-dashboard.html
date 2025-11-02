@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Perundurai Water Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #003A7A; --secondary: #FF8C00; }
+        body { font-family: 'Segoe UI', Roboto, Arial; background-color: #f8f9fa; }
+        .navbar { background-color: var(--primary); }
+        .navbar-brand { color: white !important; font-weight: 700; }
+        .navbar .nav-link { color: rgba(255,255,255,0.8) !important; }
+        .navbar .nav-link:hover { color: white !important; }
+        footer { background-color: var(--primary); color: white; padding: 40px 0; margin-top: 60px; }
+        .metric-card { background: linear-gradient(135deg, var(--primary) 0%, #005ba8 100%); color: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .metric-card h5 { font-size: 2.5rem; font-weight: 700; margin: 0; }
+        .metric-card p { margin: 5px 0 0 0; opacity: 0.9; }
+        #map { height: 500px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .table-wrapper { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .status-badge { display: inline-block; padding: 5px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .status-reported { background-color: #f8d7da; color: #721c24; }
+        .status-noted { background-color: #fff3cd; color: #856404; }
+        .status-pending { background-color: #ffe5b4; color: #ff8c00; }
+        .status-working { background-color: #d1ecf1; color: #0c5460; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .modal-content { border-radius: 12px; border: none; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 0.2rem rgba(0, 58, 122, 0.25); }
+        .btn-primary { background-color: var(--primary); border-color: var(--primary); }
+        .btn-primary:hover { background-color: #002d5f; }
+        .chart-container { position: relative; height: 300px; margin-bottom: 30px; }
+        table tbody tr:hover { background-color: #f8f9fa; cursor: pointer; }
+        .overdue { background-color: #fff3cd !important; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html"><i class="fas fa-water"></i> Water Portal - Admin</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><span style="color: white; margin: 0 20px;" id="adminName">Admin</span></li>
+                    <li class="nav-item"><a class="nav-link" onclick="logout()" style="cursor: pointer;">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid" style="margin-top: 30px; margin-bottom: 60px;">
+        <h1 style="color: var(--primary); font-weight: 700; margin-bottom: 30px;">Admin Dashboard</h1>
+
+        <!-- Metrics Row -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h5 id="totalProblems">0</h5>
+                    <p>Total Problems</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h5 id="newToday">0</h5>
+                    <p>New Today</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h5 id="inProgress">0</h5>
+                    <p>In Progress</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="metric-card">
+                    <h5 id="overdue">0</h5>
+                    <p style="color: #FFD700;">Overdue (>3 days)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map -->
+        <div class="card" style="margin-bottom: 30px;">
+            <div class="card-body">
+                <h5 style="color: var(--primary); font-weight: 700; margin-bottom: 20px;">Problem Distribution Map</h5>
+                <div id="map"></div>
+                <small style="color: #999;">🔴 Reported (Urgent) | 🟠 Pending | 🟡 Noted | 🟢 Completed</small>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card" style="margin-bottom: 30px;">
+                    <div class="card-body">
+                        <h5 style="color: var(--primary); font-weight: 700;">Problems by Ward</h5>
+                        <div class="chart-container">
+                            <canvas id="wardChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="margin-bottom: 30px;">
+                    <div class="card-body">
+                        <h5 style="color: var(--primary); font-weight: 700;">Problems by Category</h5>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Escalation Alerts -->
+        <div class="card" style="margin-bottom: 30px;">
+            <div class="card-body">
+                <h5 style="color: var(--primary); font-weight: 700; margin-bottom: 15px;">⚠️ Escalation Alerts</h5>
+                <div id="escalationAlerts"></div>
+            </div>
+        </div>
+
+        <!-- Problems Table -->
+        <div class="table-wrapper">
+            <h5 style="color: var(--primary); font-weight: 700; margin-bottom: 20px;">All Problems</h5>
+            <div class="mb-3">
+                <input type="text" class="form-control" id="searchBox" placeholder="Search by ID, Ward, or Category..." onkeyup="filterTable()">
+            </div>
+            <table class="table table-hover" id="problemsTable">
+                <thead style="background-color: var(--primary); color: white;">
+                    <tr>
+                        <th>ID</th>
+                        <th>Category</th>
+                        <th>Ward</th>
+                        <th>Status</th>
+                        <th>Days</th>
+                        <th>Endorsements</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Problem Detail Modal -->
+    <div class="modal fade" id="problemModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: var(--primary); color: white;">
+                    <h5 class="modal-title" id="problemId"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="problemDetails"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProblemUpdate()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4"><h5><i class="fas fa-info-circle"></i> Help</h5><p><a href="faq.html" style="color: #b3d9ff; text-decoration: none;">FAQ</a></p></div>
+                <div class="col-md-4"><h5><i class="fas fa-phone"></i> Emergency</h5><p>TWAD: 0424-2260621</p></div>
+                <div class="col-md-4"><h5><i class="fas fa-map"></i> Public Tracker</h5><p><a href="public-tracker.html" style="color: #b3d9ff; text-decoration: none;">View all problems</a></p></div>
+            </div>
+            <hr style="background-color: rgba(255,255,255,0.2);">
+            <p style="text-align: center;">&copy; 2025 Perundurai Water Problem Portal</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        let map;
+        let markers = [];
+        let allProblems = [];
+        let currentProblem = null;
+        let wardChart, categoryChart;
+
+        function checkLogin() {
+            let session = JSON.parse(localStorage.getItem('currentSession'));
+            if (!session || session.userType !== 'admin') {
+                window.location.href = 'admin-login.html';
+                return;
+            }
+            document.getElementById('adminName').textContent = 'Admin: ' + (session.adminName || 'Administrator');
+            loadDashboard();
+        }
+
+        function initMap() {
+            map = L.map('map').setView([11.2747, 77.5823], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        }
+
+        function loadDashboard() {
+            allProblems = JSON.parse(localStorage.getItem('problems')) || [];
+            updateMetrics();
+            displayProblems();
+            displayMapMarkers();
+            createCharts();
+            checkEscalations();
+        }
+
+        function updateMetrics() {
+            let today = new Date().toDateString();
+            document.getElementById('totalProblems').textContent = allProblems.length;
+            document.getElementById('newToday').textContent = allProblems.filter(p => new Date(p.reportedDate).toDateString() === today).length;
+            document.getElementById('inProgress').textContent = allProblems.filter(p => ['Pending', 'Working'].includes(p.status)).length;
+            
+            let overdue = 0;
+            allProblems.forEach(p => {
+                let days = Math.floor((new Date() - new Date(p.reportedDate)) / (1000 * 60 * 60 * 24));
+                if (p.status !== 'Completed' && days > 3) overdue++;
+            });
+            document.getElementById('overdue').textContent = overdue;
+        }
+
+        function displayProblems() {
+            let html = '';
+            allProblems.forEach(problem => {
+                let days = Math.floor((new Date() - new Date(problem.reportedDate)) / (1000 * 60 * 60 * 24));
+                let isOverdue = problem.status !== 'Completed' && days > 3;
+                
+                html += `
+                    <tr ${isOverdue ? 'class="overdue"' : ''}>
+                        <td><strong>${problem.id}</strong></td>
+                        <td>${problem.category}</td>
+                        <td>${problem.ward.split('-')[0].trim()}</td>
+                        <td><span class="status-badge status-${problem.status.toLowerCase()}">${problem.status}</span></td>
+                        <td>${days} days</td>
+                        <td>👍 ${problem.endorsements || 0}</td>
+                        <td><button class="btn btn-sm btn-primary" onclick="openProblemModal('${problem.id}')">View</button></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('tableBody').innerHTML = html;
+        }
+
+        function displayMapMarkers() {
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            allProblems.forEach(problem => {
+                if (problem.gps) {
+                    let color = '#999';
+                    switch(problem.status) {
+                        case 'Reported': color = '#DC3545'; break;
+                        case 'Noted': color = '#FFC107'; break;
+                        case 'Pending': color = '#FF8C00'; break;
+                        case 'Working': color = '#0dcaf0'; break;
+                        case 'Completed': color = '#28A745'; break;
+                    }
+
+                    let marker = L.circleMarker([problem.gps.lat, problem.gps.lng], {
+                        radius: 8,
+                        fillColor: color,
+                        color: '#fff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).bindPopup(`<strong>${problem.id}</strong><br>${problem.category}<br>Status: ${problem.status}`);
+
+                    markers.push(marker);
+                    marker.addTo(map);
+                }
+            });
+        }
+
+        function createCharts() {
+            // Ward chart
+            let wards = {};
+            allProblems.forEach(p => {
+                let ward = p.ward.split('-')[0].trim();
+                wards[ward] = (wards[ward] || 0) + 1;
+            });
+
+            let wardCtx = document.getElementById('wardChart').getContext('2d');
+            if (wardChart) wardChart.destroy();
+            wardChart = new Chart(wardCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(wards).sort(),
+                    datasets: [{
+                        label: 'Problems',
+                        data: Object.values(wards),
+                        backgroundColor: 'var(--primary)',
+                        borderRadius: 5
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Category chart
+            let categories = {};
+            allProblems.forEach(p => {
+                categories[p.category] = (categories[p.category] || 0) + 1;
+            });
+
+            let catCtx = document.getElementById('categoryChart').getContext('2d');
+            if (categoryChart) categoryChart.destroy();
+            categoryChart = new Chart(catCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categories),
+                    datasets: [{
+                        data: Object.values(categories),
+                        backgroundColor: ['#003A7A', '#FF8C00', '#DC3545', '#28A745', '#0dcaf0', '#FFC107', '#6f42c1', '#20c997', '#fd7e14', '#6610f2', '#e83e8c', '#dc3545']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function checkEscalations() {
+            let escalated = allProblems.filter(p => {
+                if (p.status === 'Completed') return false;
+                let days = Math.floor((new Date() - new Date(p.reportedDate)) / (1000 * 60 * 60 * 24));
+                return days > 3;
+            });
+
+            let html = '';
+            if (escalated.length === 0) {
+                html = '<p class="text-success">✓ No escalations - All problems within 72-hour deadline</p>';
+            } else {
+                escalated.forEach(p => {
+                    let days = Math.floor((new Date() - new Date(p.reportedDate)) / (1000 * 60 * 60 * 24));
+                    html += `
+                        <div style="background: #f8d7da; padding: 10px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid #DC3545;">
+                            <strong>${p.id}</strong> - ${p.category} in ${p.ward} - <strong style="color: #DC3545;">${days} days overdue</strong>
+                            <button class="btn btn-sm btn-danger ms-2" onclick="openProblemModal('${p.id}')">Action</button>
+                        </div>
+                    `;
+                });
+            }
+            document.getElementById('escalationAlerts').innerHTML = html;
+        }
+
+        function openProblemModal(problemId) {
+            currentProblem = allProblems.find(p => p.id === problemId);
+            document.getElementById('problemId').textContent = currentProblem.id;
+
+            let html = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Category:</strong> ${currentProblem.category}</p>
+                        <p><strong>Ward:</strong> ${currentProblem.ward}</p>
+                        <p><strong>Status:</strong> 
+                            <select class="form-select form-select-sm" id="statusSelect">
+                                <option value="Reported" ${currentProblem.status === 'Reported' ? 'selected' : ''}>Reported</option>
+                                <option value="Noted" ${currentProblem.status === 'Noted' ? 'selected' : ''}>Noted</option>
+                                <option value="Pending" ${currentProblem.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Working" ${currentProblem.status === 'Working' ? 'selected' : ''}>Working</option>
+                                <option value="Completed" ${currentProblem.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Assign to Team:</strong>
+                            <select class="form-select form-select-sm" id="teamSelect">
+                                <option value="">Select Team</option>
+                                <option value="Team A">Team A</option>
+                                <option value="Team B">Team B</option>
+                                <option value="Team C">Team C</option>
+                                <option value="Team D">Team D</option>
+                            </select>
+                        </p>
+                        <p><strong>Endorsements:</strong> ${currentProblem.endorsements || 0}</p>
+                        <p><strong>Comments:</strong> ${(currentProblem.comments || []).length}</p>
+                    </div>
+                </div>
+                <hr>
+                <p><strong>Description:</strong></p>
+                <p>${currentProblem.description}</p>
+                ${currentProblem.photo && currentProblem.photo.length > 0 ? `
+                    <p><strong>Photo:</strong></p>
+                    <img src="${currentProblem.photo[0]}" style="max-width: 100%; max-height: 300px; border-radius: 8px;">
+                ` : ''}
+            `;
+            document.getElementById('problemDetails').innerHTML = html;
+            new bootstrap.Modal(document.getElementById('problemModal')).show();
+        }
+
+        function saveProblemUpdate() {
+            let newStatus = document.getElementById('statusSelect').value;
+            let team = document.getElementById('teamSelect').value;
+
+            if (newStatus !== currentProblem.status) {
+                currentProblem.status = newStatus;
+                if (!currentProblem.timeline) currentProblem.timeline = [];
+                currentProblem.timeline.push({
+                    status: newStatus,
+                    timestamp: new Date().toISOString()
+                });
+
+                // Create notification for user
+                let notifs = JSON.parse(localStorage.getItem('notifications')) || [];
+                notifs.push({
+                    id: 'NOTIF-' + Date.now(),
+                    userId: currentProblem.userId,
+                    problemId: currentProblem.id,
+                    message: `Problem ${currentProblem.id} status updated to ${newStatus}`,
+                    timestamp: new Date().toISOString(),
+                    read: false
+                });
+                localStorage.setItem('notifications', JSON.stringify(notifs));
+            }
+
+            if (team) {
+                currentProblem.assignedTo = team;
+            }
+
+            let idx = allProblems.findIndex(p => p.id === currentProblem.id);
+            allProblems[idx] = currentProblem;
+            localStorage.setItem('problems', JSON.stringify(allProblems));
+
+            bootstrap.Modal.getInstance(document.getElementById('problemModal')).hide();
+            loadDashboard();
+            alert('Problem updated successfully!');
+        }
+
+        function filterTable() {
+            let filter = document.getElementById('searchBox').value.toLowerCase();
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('currentSession');
+            window.location.href = 'index.html';
+        }
+
+        window.addEventListener('load', () => {
+            checkLogin();
+            initMap();
+        });
+    </script>
+</body>
+</html>

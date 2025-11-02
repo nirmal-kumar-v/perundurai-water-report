@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Perundurai Water Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --primary: #003A7A; --secondary: #FF8C00; }
+        body { font-family: 'Segoe UI', Roboto, Arial; background-color: #f8f9fa; color: #333; }
+        .navbar { background-color: var(--primary); padding: 15px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .navbar-brand { font-weight: 700; font-size: 1.3rem; color: white !important; display: flex; align-items: center; gap: 10px; }
+        .navbar .nav-link { color: rgba(255,255,255,0.8) !important; margin: 0 10px; font-weight: 500; transition: color 0.3s; }
+        .navbar .nav-link:hover { color: white !important; }
+        footer { background-color: var(--primary); color: white; padding: 40px 0; margin-top: 60px; }
+        footer a { color: #b3d9ff; text-decoration: none; }
+        footer a:hover { color: white; }
+        .page-header { background: linear-gradient(135deg, var(--primary) 0%, #005ba8 100%); color: white; padding: 60px 0; text-align: center; margin-bottom: 40px; }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; }
+        .accordion-button { font-weight: 600; color: var(--primary); }
+        .accordion-button:not(.collapsed) { background-color: #e3f2fd; color: var(--primary); }
+        .accordion-button:focus { border-color: var(--primary); box-shadow: 0 0 0 0.25rem rgba(0, 58, 122, 0.25); }
+        .accordion-item { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; }
+        .faq-category { background-color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .faq-category h3 { color: var(--primary); font-weight: 700; margin-bottom: 20px; border-left: 4px solid var(--secondary); padding-left: 15px; }
+        body.dark-mode { background-color: #1a1a1a; color: #f0f0f0; }
+        body.dark-mode .faq-category { background-color: #2a2a2a; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><i class="fas fa-water"></i> Water Portal</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link" href="public-tracker.html">Tracker</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="faq.html">FAQ</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-question-circle"></i> Frequently Asked Questions</h1>
+            <p>Common Questions About Using Our Platform</p>
+        </div>
+    </div>
+
+    <div class="container" style="margin-bottom: 60px;">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+
+                <!-- Registration & Login -->
+                <div class="faq-category">
+                    <h3><i class="fas fa-user-check"></i> Registration & Login</h3>
+                    <div class="accordion" id="registrationFAQ">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    How do I register on the platform?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#registrationFAQ">
+                                <div class="accordion-body">
+                                    <strong>Step-by-step registration:</strong>
+                                    <ol>
+                                        <li>Click "Register" on the homepage</li>
+                                        <li>Enter your 12-digit Aadhaar number</li>
+                                        <li>Fill in name, phone (10 digits), email, and address</li>
+                                        <li>Select your ward from the dropdown</li>
+                                        <li>Upload a clear photo (JPG/PNG, max 5MB) for KYC verification</li>
+                                        <li>Set a password (minimum 6 characters)</li>
+                                        <li>Accept terms and click "Register Now"</li>
+                                    </ol>
+                                    <p>Your account will be created instantly. No OTP required - registration is immediate.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Why do I need to provide my Aadhaar number?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#registrationFAQ">
+                                <div class="accordion-body">
+                                    Aadhaar verification serves three purposes:
+                                    <ul>
+                                        <li><strong>Authenticity:</strong> Prevents fake accounts and false complaints</li>
+                                        <li><strong>Accountability:</strong> Links you to your complaints so you're responsible</li>
+                                        <li><strong>Government Recognition:</strong> Makes the portal officially credible with authorities</li>
+                                    </ul>
+                                    Your Aadhaar is stored securely and never shared without permission.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Can I login with my Aadhaar number or just email?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#registrationFAQ">
+                                <div class="accordion-body">
+                                    You can login using either:
+                                    <ul>
+                                        <li>Your registered email address</li>
+                                        <li>Your 12-digit Aadhaar number</li>
+                                    </ul>
+                                    Plus your password. Choose whichever is easier for you.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    What if I forget my password?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#registrationFAQ">
+                                <div class="accordion-body">
+                                    Click "Forgot Password" on the login page. We'll display your registered phone number so you can verify your identity. Once verified, you can set a new password.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reporting Problems -->
+                <div class="faq-category">
+                    <h3><i class="fas fa-file-alt"></i> Reporting Problems</h3>
+                    <div class="accordion" id="reportingFAQ">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                    How do I report a water problem?
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#reportingFAQ">
+                                <div class="accordion-body">
+                                    <strong>To report a problem:</strong>
+                                    <ol>
+                                        <li>Login to your dashboard</li>
+                                        <li>Click "Report New Problem" tab</li>
+                                        <li>Select the problem category (12 options)</li>
+                                        <li>Select your ward/location</li>
+                                        <li>Describe the problem (max 500 characters)</li>
+                                        <li>Upload at least one photo showing the problem</li>
+                                        <li>Set severity level (auto-calculated)</li>
+                                        <li>Click "Submit Report"</li>
+                                    </ol>
+                                    You'll get a unique Problem ID (PROB-2025-XXXX) for tracking.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                                    What happens after I submit a problem report?
+                                </button>
+                            </h2>
+                            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#reportingFAQ">
+                                <div class="accordion-body">
+                                    <strong>Timeline of your problem:</strong>
+                                    <ol>
+                                        <li><strong>Immediately:</strong> Problem appears on admin dashboard and public tracker</li>
+                                        <li><strong>Within 24 hours:</strong> Admin marks "Noted" (acknowledges)</li>
+                                        <li><strong>Within 2 days:</strong> Admin marks "Pending" (assigns team)</li>
+                                        <li><strong>Within 3 days:</strong> Team starts work, marked "Working"</li>
+                                        <li><strong>Within 4-5 days:</strong> Problem resolved, marked "Completed"</li>
+                                    </ol>
+                                    <strong>If 72 hours pass without action:</strong> Problem automatically escalates to Supreme Authority.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">
+                                    Can I edit or delete my problem report?
+                                </button>
+                            </h2>
+                            <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#reportingFAQ">
+                                <div class="accordion-body">
+                                    Yes, but only while the problem is in "Reported" status (before admin acknowledges).
+                                    <ul>
+                                        <li>Once admin marks "Noted", you can view but not edit</li>
+                                        <li>Deletion is permanent once admin starts working on it</li>
+                                    </ul>
+                                    This prevents losing important problem data once action has begun.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq8">
+                                    What if I want to report an urgent/emergency problem?
+                                </button>
+                            </h2>
+                            <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#reportingFAQ">
+                                <div class="accordion-body">
+                                    For emergencies (no water at all, chemical contamination, etc.):
+                                    <ol>
+                                        <li>Report on platform immediately</li>
+                                        <li>Set severity as "Critical"</li>
+                                        <li>Call TWAD directly: <strong>0424-2260621</strong></li>
+                                        <li>Mention your problem ID</li>
+                                    </ol>
+                                    Calling ensures immediate attention while the portal tracks everything.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tracking & Updates -->
+                <div class="faq-category">
+                    <h3><i class="fas fa-map"></i> Tracking & Updates</h3>
+                    <div class="accordion" id="trackingFAQ">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq9">
+                                    How do I track my problem's status?
+                                </button>
+                            </h2>
+                            <div id="faq9" class="accordion-collapse collapse" data-bs-parent="#trackingFAQ">
+                                <div class="accordion-body">
+                                    <strong>Three ways to track:</strong>
+                                    <ol>
+                                        <li>Go to your dashboard → "My Reports" tab</li>
+                                        <li>Click the problem ID to view full timeline</li>
+                                        <li>You'll see every status change with timestamp and photos</li>
+                                    </ol>
+                                    Similar to tracking an Amazon order - complete transparency at each step.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq10">
+                                    How will I know when my problem is updated?
+                                </button>
+                            </h2>
+                            <div id="faq10" class="accordion-collapse collapse" data-bs-parent="#trackingFAQ">
+                                <div class="accordion-body">
+                                    You'll get notifications at every step:
+                                    <ul>
+                                        <li><strong>In-app:</strong> Notification badge in your dashboard</li>
+                                        <li><strong>Email:</strong> Update sent to your registered email</li>
+                                        <li><strong>SMS:</strong> Text message to your phone</li>
+                                    </ul>
+                                    All notifications are logged in your "Notification Center" even after 3 days.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq11">
+                                    What does it mean when a problem is escalated?
+                                </button>
+                            </h2>
+                            <div id="faq11" class="accordion-collapse collapse" data-bs-parent="#trackingFAQ">
+                                <div class="accordion-body">
+                                    Escalation happens when:
+                                    <ul>
+                                        <li>Admin hasn't updated the problem after 72 hours (3 days)</li>
+                                        <li>Problem automatically moves to Supreme Authority dashboard</li>
+                                        <li>Supreme Authority then investigates or forces the admin to act</li>
+                                    </ul>
+                                    This creates accountability - no admin can ignore problems forever.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Endorsements & Community -->
+                <div class="faq-category">
+                    <h3><i class="fas fa-heart"></i> Endorsements & Community</h3>
+                    <div class="accordion" id="endorsementFAQ">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq12">
+                                    What is the endorsement system?
+                                </button>
+                            </h2>
+                            <div id="faq12" class="accordion-collapse collapse" data-bs-parent="#endorsementFAQ">
+                                <div class="accordion-body">
+                                    Endorsement is like "upvoting" or "liking" a problem:
+                                    <ul>
+                                        <li>If you have the same problem, click the heart icon to endorse</li>
+                                        <li>Each endorsement shows: "50 people have this problem"</li>
+                                        <li>Problems with more endorsements get higher priority</li>
+                                        <li>Prevents single complaints from being ignored</li>
+                                    </ul>
+                                    <strong>Why it matters:</strong> Shows collective impact. A problem affecting 50 people is more urgent than one affecting 1 person.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq13">
+                                    Can I comment on other people's problems?
+                                </button>
+                            </h2>
+                            <div id="faq13" class="accordion-collapse collapse" data-bs-parent="#endorsementFAQ">
+                                <div class="accordion-body">
+                                    Yes! You can:
+                                    <ul>
+                                        <li>Leave comments saying you have the same problem</li>
+                                        <li>Share additional details or photos</li>
+                                        <li>Discuss solutions with other residents</li>
+                                        <li>Admin will see collective feedback and prioritize accordingly</li>
+                                    </ul>
+                                    Inappropriate comments are moderated and removed.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq14">
+                                    Can I see other problems in my area?
+                                </button>
+                            </h2>
+                            <div id="faq14" class="accordion-collapse collapse" data-bs-parent="#endorsementFAQ">
+                                <div class="accordion-body">
+                                    Yes! Two ways:
+                                    <ol>
+                                        <li><strong>Public Tracker:</strong> View all problems on interactive map (no login required)</li>
+                                        <li><strong>Your Dashboard:</strong> Filter by your ward to see local issues</li>
+                                    </ol>
+                                    This helps you understand the full scope of problems in your area.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin & Authority -->
+                <div class="faq-category">
+                    <h3><i class="fas fa-shield-alt"></i> For Administrators & Authority</h3>
+                    <div class="accordion" id="adminFAQ">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq15">
+                                    How do admins update problem status?
+                                </button>
+                            </h2>
+                            <div id="faq15" class="accordion-collapse collapse" data-bs-parent="#adminFAQ">
+                                <div class="accordion-body">
+                                    <strong>Admin workflow:</strong>
+                                    <ol>
+                                        <li>View all problems on interactive map</li>
+                                        <li>Click problem → Change status: Reported → Noted → Pending → Working → Completed</li>
+                                        <li>Assign to field teams (Team A, B, C, D)</li>
+                                        <li>Upload evidence photos as work progresses</li>
+                                        <li>Each update triggers user notification</li>
+                                    </ol>
+                                    Admins are accountable - 72-hour deadline enforced by auto-escalation.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq16">
+                                    How does the Supreme Authority monitor performance?
+                                </button>
+                            </h2>
+                            <div id="faq16" class="accordion-collapse collapse" data-bs-parent="#adminFAQ">
+                                <div class="accordion-body">
+                                    Supreme Authority sees:
+                                    <ul>
+                                        <li>Analytics: Overall resolution rate, average time, trends</li>
+                                        <li>Ward analysis: Where problems are most severe</li>
+                                        <li>Admin performance: Who resolves fastest, who delays</li>
+                                        <li>Escalated problems: All unresolved problems after 72 hours</li>
+                                        <li>Reports: Exportable data for policy decisions</li>
+                                    </ul>
+                                    This creates pressure for everyone to perform better.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technical -->
+                <div class="faq-category">
+                    <h3><i class="fas fa-cog"></i> Technical Questions</h3>
+                    <div class="accordion" id="technicalFAQ">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq17">
+                                    Is my data safe?
+                                </button>
+                            </h2>
+                            <div id="faq17" class="accordion-collapse collapse" data-bs-parent="#technicalFAQ">
+                                <div class="accordion-body">
+                                    Yes. Your data is:
+                                    <ul>
+                                        <li><strong>Stored securely:</strong> Browser storage with basic encryption</li>
+                                        <li><strong>Never sold:</strong> Only used for this platform</li>
+                                        <li><strong>Verified:</strong> Aadhaar verification prevents unauthorized accounts</li>
+                                        <li><strong>Backed up:</strong> Problems archived permanently for reference</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq18">
+                                    What if I'm having technical issues?
+                                </button>
+                            </h2>
+                            <div id="faq18" class="accordion-collapse collapse" data-bs-parent="#technicalFAQ">
+                                <div class="accordion-body">
+                                    Try these steps:
+                                    <ol>
+                                        <li>Clear your browser cache (Ctrl+Shift+Del)</li>
+                                        <li>Try a different browser</li>
+                                        <li>Check your internet connection</li>
+                                        <li>Enable browser storage (localStorage)</li>
+                                    </ol>
+                                    If still having issues, contact us on the Contact page.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq19">
+                                    Can I use this on my mobile phone?
+                                </button>
+                            </h2>
+                            <div id="faq19" class="accordion-collapse collapse" data-bs-parent="#technicalFAQ">
+                                <div class="accordion-body">
+                                    Yes! The portal is fully optimized for mobile:
+                                    <ul>
+                                        <li>All features work on smartphone screens</li>
+                                        <li>Easy to report problems while at location</li>
+                                        <li>Take photos directly from camera</li>
+                                        <li>Get notifications on mobile</li>
+                                    </ul>
+                                    Just visit the URL in your phone's browser.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="alert alert-info mt-5">
+                    <h5><i class="fas fa-info-circle"></i> Still have questions?</h5>
+                    <p>Visit our <a href="contact.html" style="color: var(--primary); font-weight: 600;">Contact page</a> to reach out. For emergencies, call TWAD directly at <strong>0424-2260621</strong>.</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5><i class="fas fa-info-circle"></i> About</h5>
+                    <ul style="list-style: none;">
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-sign-in-alt"></i> Access</h5>
+                    <ul style="list-style: none;">
+                        <li><a href="user-login.html">User Login</a></li>
+                        <li><a href="admin-login.html">Admin Login</a></li>
+                        <li><a href="public-tracker.html">Public Tracker</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-phone"></i> Emergency</h5>
+                    <ul style="list-style: none;">
+                        <li>TWAD: 0424-2260621</li>
+                        <li>Maintenance: 0424-2269891</li>
+                        <li>Lab: (0424) 2534594</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5><i class="fas fa-cog"></i> Settings</h5>
+                    <button class="btn btn-outline-light btn-sm" onclick="toggleDarkMode()">
+                        <i class="fas fa-moon"></i> Dark Mode
+                    </button>
+                </div>
+            </div>
+            <hr style="background-color: rgba(255,255,255,0.2);">
+            <div class="text-center">
+                <p>&copy; 2025 Perundurai Water Problem Portal</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+</body>
+</html>
